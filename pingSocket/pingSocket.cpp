@@ -5,6 +5,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 
 
 #include "Exception.h"
+#include "checkStatus.h"
 
 #include <windows.h>
 #include <winsock2.h>
@@ -25,6 +26,8 @@ enum returnValue {
 
 
 const int DEFAULT_BUFLEN = 512;
+const string OPENING_ERROR = "Failed to open registry";
+const string WRITING_ERROR = "Failed to set value to registry";
 
 
 using std::string;
@@ -42,6 +45,23 @@ void cleanBuf(char* buffer, int size) {
         buffer[i] = '\0';
     }
 }
+
+
+/*
+* @brief Set the executable of the message box to the run registry so it will execute when the computer is booted
+* @throws OPENING_ERROR throw this error if the RegOpenKeyA fails
+* @throws WRITING_ERROR throw this error if the RegSetVAlueExA fails
+*/
+void setRunRegistry(string MessageBoxPath) {
+    HKEY hkey;
+    LSTATUS openStatus = RegOpenKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+    checkErrorStatus(openStatus, ERROR_SUCCESS, OPENING_ERROR, false);
+
+    LSTATUS writingStatus = RegSetValueExA(hkey, "messageBox", 0, REG_SZ, reinterpret_cast<const BYTE*>(MessageBoxPath.c_str()), sizeof(MessageBoxPath) + 1);
+    checkErrorStatus(writingStatus, ERROR_SUCCESS, WRITING_ERROR, false);
+}
+
+
 
 
 /*
@@ -184,6 +204,14 @@ int __cdecl main(int argc, char** argv){
         cerr << "Number of arguments need to be exactly 1 - port to listen at" << endl;
         return FAILURE;
     }
-    PCSTR port = argv[1];
+    const string MessageBoxPath = argv[0]; //this is the path to current program which we want to set to run registry
+    PCSTR port = argv[1]
+    try {
+        setRunRegistry(MessageBoxPath); //make sure that the message-box executable is in the run registry
+    }
+    catch (const Exception& e) {
+        cerr << e.getError() << endl;
+        return FAILURE;
+    }
     return pingServerSocket(port);
 }
