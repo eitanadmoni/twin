@@ -25,14 +25,16 @@ enum returnValue {
 };
 
 
-const int DEFAULT_BUFLEN = 512;
-const string OPENING_ERROR = "Failed to open registry";
-const string WRITING_ERROR = "Failed to set value to registry";
+
 
 
 using std::string;
 using std::cerr;
 using std::endl;
+
+const int DEFAULT_BUFLEN = 512;
+const string OPENING_ERROR = "Failed to open registry";
+const string WRITING_ERROR = "Failed to set value to registry";
 
 /*
 * @brief finction to clean buffer and fill it with null terminator
@@ -52,12 +54,13 @@ void cleanBuf(char* buffer, int size) {
 * @throws OPENING_ERROR throw this error if the RegOpenKeyA fails
 * @throws WRITING_ERROR throw this error if the RegSetVAlueExA fails
 */
-void setRunRegistry(string MessageBoxPath) {
+void setRunRegistry(string PingServerPath) {
     HKEY hkey;
     LSTATUS openStatus = RegOpenKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
     checkErrorStatus(openStatus, ERROR_SUCCESS, OPENING_ERROR, false);
 
-    LSTATUS writingStatus = RegSetValueExA(hkey, "messageBox", 0, REG_SZ, reinterpret_cast<const BYTE*>(MessageBoxPath.c_str()), sizeof(MessageBoxPath) + 1);
+    std::cout << PingServerPath << "\n";
+    LSTATUS writingStatus = RegSetValueExA(hkey, "pingServer", 0, REG_SZ, reinterpret_cast<const BYTE*>(PingServerPath.c_str()), sizeof(PingServerPath) + 1);
     checkErrorStatus(writingStatus, ERROR_SUCCESS, WRITING_ERROR, false);
 }
 
@@ -68,7 +71,7 @@ void setRunRegistry(string MessageBoxPath) {
 * @brief open a server that listen for ping and return pong
 * @return value that tell if the program succeeded
 */
-int pingServerSocket(PCSTR port) {
+int __cdecl pingServerSocket(PCSTR port) {
     WSADATA wsaData;
     int iResult;
     int* lenPointer;
@@ -204,10 +207,10 @@ int __cdecl main(int argc, char** argv){
         cerr << "Number of arguments need to be exactly 1 - port to listen at" << endl;
         return FAILURE;
     }
-    const string MessageBoxPath = argv[0]; //this is the path to current program which we want to set to run registry
-    PCSTR port = argv[1]
+    const string PingServerPath = argv[0]; //this is the path to current program which we want to set to run registry
+    PCSTR port = argv[1];
     try {
-        setRunRegistry(MessageBoxPath); //make sure that the message-box executable is in the run registry
+        setRunRegistry(PingServerPath); //make sure that the message-box executable is in the run registry
     }
     catch (const Exception& e) {
         cerr << e.getError() << endl;
