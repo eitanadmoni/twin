@@ -69,12 +69,17 @@ int main() {
 				cerr << "Failed to close mutex handler" << endl;
 				return FAILURE;
 			}
-		case WAIT_ABANDONED:
-			cerr << "The mutex is get abandoned!" << endl;
 			break;
+
+		case WAIT_ABANDONED:
+			cerr << "The mutex is abandoned!" << endl;
+			if (!CloseHandle(mutexHandler)) {
+				cerr << "Failed to close mutex handler" << endl;
+				return FAILURE;
+			}
+			return FAILURE;
 		}
-	}
-	catch (Exception e) {
+	} catch (const Exception& e) {
 		cerr << e.getError() << endl;
 		return FAILURE;
 	}
