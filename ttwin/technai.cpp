@@ -21,8 +21,7 @@ enum returnValue {
 const string OPENING_ERROR = "Failed to open registry";
 const string WRITING_ERROR = "Failed to set value to registry";
 const string MESSAGE_BOX_ERROR = "Failed to pop message box";
-const std::string MESSAGE_BOX_PATH = "C:\\Users\\user\\source\\repos\\eitanadmoni\\twin\\ttwin\\x64\\Debug\\ttwin.exe";
-const LPCSTR MESSAGE = "MANAGEMENT PROGRAM IS UP";
+LPCSTR MESSAGE = "MANAGEMENT PROGRAM IS UP";
 
 
 /*
@@ -30,21 +29,22 @@ const LPCSTR MESSAGE = "MANAGEMENT PROGRAM IS UP";
 * @throws OPENING_ERROR throw this error if the RegOpenKeyA fails
 * @throws WRITING_ERROR throw this error if the RegSetVAlueExA fails
 */
-void setRunRegistry() {
+void setRunRegistry(string MessageBoxPath) {
 	HKEY hkey;
 	LSTATUS openStatus = RegOpenKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
 	checkErrorStatus(openStatus, ERROR_SUCCESS,  OPENING_ERROR, false);
 	
-	LSTATUS writingStatus = RegSetValueExA(hkey, "messageBox", 0, REG_SZ, reinterpret_cast<const BYTE*>(MESSAGE_BOX_PATH.c_str()), sizeof(MESSAGE_BOX_PATH) + 1);
+	LSTATUS writingStatus = RegSetValueExA(hkey, "messageBox", 0, REG_SZ, reinterpret_cast<const BYTE*>(MessageBoxPath.c_str()), sizeof(MessageBoxPath) + 1);
 	checkErrorStatus(writingStatus, ERROR_SUCCESS, WRITING_ERROR, false);
 }
 
 
-int main() {
+int main(int argc, char** argv) {
 	HANDLE mutexHandler;
 	int messageBoxStatus = 0;
+	const string MessageBoxPath = argv[0]; //this is the path to current program which we want to set to run registry
 	try {
-		setRunRegistry(); //make sure that the message-box executable is in the run registry
+		setRunRegistry(MessageBoxPath); //make sure that the message-box executable is in the run registry
 
 		mutexHandler = CreateMutexA(NULL, FALSE, "tech_mutex");
 		if (mutexHandler == NULL) {
@@ -59,9 +59,8 @@ int main() {
 		case WAIT_OBJECT_0:
 			messageBoxStatus = MessageBoxA(NULL, MESSAGE, "message", MB_OK);
 			checkErrorStatus(messageBoxStatus, 0, MESSAGE_BOX_ERROR, true);
-			Sleep((DWORD)3600000);
-			if (!ReleaseMutex(mutexHandler))
-			{
+			Sleep(static_cast<DWORD>(3600000));
+			if (!ReleaseMutex(mutexHandler)){
 				cerr << "Failed to release mutex" << endl;
 				return FAILURE;
 			}
