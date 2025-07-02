@@ -1,11 +1,9 @@
-#include <windows.h>
-#include <mutex>
-#include <thread>
-#include <chrono>
-#include <iostream>
-#include <string>
 #include "Exception.h"
 #include "checkStatus.h"
+
+#include <windows.h>
+#include <iostream>
+#include <string>
 
 
 using std::cout;
@@ -50,7 +48,7 @@ int main() {
 
 		mutexHandler = CreateMutexA(NULL, FALSE, "tech_mutex");
 		if (mutexHandler == NULL) {
-			cerr << "Creating mutex failed" << endl;;
+			cerr << "Creating mutex failed" << endl;
 			return FAILURE;
 		}
 		DWORD dwWaitResult = WaitForSingleObject(
