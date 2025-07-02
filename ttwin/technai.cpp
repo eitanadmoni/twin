@@ -1,5 +1,6 @@
 #include "Exception.h"
 #include "checkStatus.h"
+#include "MyMutex.h"
 
 #include <windows.h>
 #include <iostream>
@@ -12,7 +13,7 @@ using std::string;
 using std::cerr;
 
 
-enum returnValue {
+enum class returnValue {
 	SUCCESS,
 	FAILURE,
 };
@@ -40,19 +41,14 @@ void setRunRegistry(string MessageBoxPath) {
 
 
 int main(int argc, char** argv) {
-	HANDLE mutexHandler;
 	int messageBoxStatus = 0;
+	MyMutex mutex = MyMutex("MassegeBoxMutex");
 	const string MessageBoxPath = argv[0]; //this is the path to current program which we want to set to run registry
 	try {
 		setRunRegistry(MessageBoxPath); //make sure that the message-box executable is in the run registry
 
-		mutexHandler = CreateMutexA(NULL, FALSE, "tech_mutex");
-		if (mutexHandler == NULL) {
-			cerr << "Creating mutex failed" << endl;
-			return FAILURE;
-		}
 		DWORD dwWaitResult = WaitForSingleObject(
-			mutexHandler,
+			mutex.getHandler(),
 			INFINITE);
 
 		switch (dwWaitResult) {
@@ -60,27 +56,15 @@ int main(int argc, char** argv) {
 			messageBoxStatus = MessageBoxA(NULL, MESSAGE, "message", MB_OK);
 			checkErrorStatus(messageBoxStatus, 0, MESSAGE_BOX_ERROR, true);
 			Sleep(static_cast<DWORD>(3600000));
-			if (!ReleaseMutex(mutexHandler)){
-				cerr << "Failed to release mutex" << endl;
-				return FAILURE;
-			}
-			if (!CloseHandle(mutexHandler)) {
-				cerr << "Failed to close mutex handler" << endl;
-				return FAILURE;
-			}
 			break;
 
 		case WAIT_ABANDONED:
 			cerr << "The mutex is abandoned!" << endl;
-			if (!CloseHandle(mutexHandler)) {
-				cerr << "Failed to close mutex handler" << endl;
-				return FAILURE;
-			}
-			return FAILURE;
+			return static_cast<int>(returnValue::FAILURE);
 		}
 	} catch (const Exception& e) {
 		cerr << e.getError() << endl;
-		return FAILURE;
+		return static_cast<int>(returnValue::FAILURE);
 	}
-	return SUCCESS;
+	return static_cast<int>(returnValue::SUCCESS);
 }

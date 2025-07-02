@@ -26,8 +26,7 @@ void checkIfErrorIsNot(LSTATUS status, int targetStatus, const string&  errorMes
 void checkErrorStatus(LSTATUS status, int targetStatus, const string& errorMessage, bool equal) {
 	if (equal) {
 		checkIfErrorIs(status, targetStatus, errorMessage);
-	}
-	else {
+	}else {
 		checkIfErrorIsNot(status, targetStatus, errorMessage);
 	}
 }
