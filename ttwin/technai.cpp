@@ -75,7 +75,7 @@ int main() {
 		}
 	}
 	catch (Exception e) {
-		cout << e.getError();
+		cerr << e.getError() << endl;
 		return FAILURE;
 	}
 	return SUCCESS;
