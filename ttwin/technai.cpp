@@ -23,7 +23,7 @@ enum returnValue {
 const string OPENING_ERROR = "Failed to open registry";
 const string WRITING_ERROR = "Failed to set value to registry";
 const string MESSAGE_BOX_ERROR = "Failed to pop message box";
-const std::string MESSAGE_BOX_PATH = "C:\\Users\\user\\source\\repos\\eitanadmoni\\twin\\ttwin\\technai.cpp";
+const std::string MESSAGE_BOX_PATH = "C:\\Users\\user\\source\\repos\\eitanadmoni\\twin\\ttwin\\x64\\Debug\\ttwin.exe";
 const LPCSTR MESSAGE = "MANAGEMENT PROGRAM IS UP";
 
 
