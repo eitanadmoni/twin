@@ -1,5 +1,6 @@
 #include "checkStatus.h"
 #include "Exception.h"
+
 #include <windows.h>
 #include <string>
 
