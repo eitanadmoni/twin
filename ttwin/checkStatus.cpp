@@ -1,4 +1,5 @@
 #include "checkStatus.h"
+
 #include "Exception.h"
 
 #include <windows.h>
@@ -8,21 +9,21 @@
 using std::string;
 
 
-void checkIfErrorIs(LSTATUS status, int targetStatus, string errorMessage) {
+void checkIfErrorIs(LSTATUS status, int targetStatus,  const string& errorMessage) {
 	if (status == targetStatus) {
 		throw Exception(errorMessage);
 	}
 }
 
 
-void checkIfErrorIsNot(LSTATUS status, int targetStatus, string errorMessage) {
+void checkIfErrorIsNot(LSTATUS status, int targetStatus, const string&  errorMessage) {
 	if (status != targetStatus) {
 		throw Exception(errorMessage);
 	}
 }
 
 
-void checkErrorStatus(LSTATUS status, int targetStatus, string errorMessage, bool equal) {
+void checkErrorStatus(LSTATUS status, int targetStatus, const string& errorMessage, bool equal) {
 	if (equal) {
 		checkIfErrorIs(status, targetStatus, errorMessage);
 	}

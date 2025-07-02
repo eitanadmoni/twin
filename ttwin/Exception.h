@@ -2,7 +2,7 @@
 
 #include <string>
 
-class Exception{
+class Exception {
 public:
 	/**
 	* @brief Builder for Exception class
@@ -21,7 +21,7 @@ public:
 	* @brief Exception method to compare between 2 exceptions
 	* @return boolean value of the comparison
 	*/
-	bool operator== (Exception& otherException);
+	bool operator== (const Exception& otherException);
 
 private:
 	std::string m_error; // The error string

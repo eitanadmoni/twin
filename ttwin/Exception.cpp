@@ -9,7 +9,7 @@ Exception::Exception(const string& error) : m_error{ error }
 
 const string& Exception::getError() const { return m_error; }
 
-bool Exception::operator== (Exception& otherException) {
+bool Exception::operator== (const Exception& otherException) {
 	if (this->getError() == otherException.getError()) {
 		return true;
 	}
